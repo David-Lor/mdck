@@ -1,6 +1,7 @@
 import sys
 
 from .steps import check_start, check_follow, check_mismatch, repair_start, repair_follow
+from .utils import mdadm_get_detail
 
 
 def main():
@@ -15,7 +16,7 @@ def main():
     if not ok:
         sys.exit(1)
 
-    if mismatch_count > 0:
+    if mismatch_count > 0 or mdadm_get_detail(device).is_resyncing():
         if not repair_start(device):
             sys.exit(1)
         if not repair_follow(device):
