@@ -1,2 +1,3 @@
-# generic-template
-My custom template for generic repositories
+# mdadm check & repair tool
+
+mdck is a Python app that checks and repairs mdadm arrays.
