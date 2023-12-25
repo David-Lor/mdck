@@ -44,7 +44,10 @@ def mdadm_follow_percentage(device: str, state: str) -> bool:
         status = mdadm_get_detail(device)
         if state == MdadmStates.Checking:
             current_percentage = status.check_status_percentage
+        elif state == MdadmStates.Resyncing:
+            current_percentage = status.resync_status_percentage
         else:
+            print("mdadm_follow_percentage: invalid state")
             return False
 
         if current_percentage is None:

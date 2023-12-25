@@ -7,10 +7,11 @@ from .utils import mdadm_get_detail
 def main():
     device = sys.argv[-1]
 
-    if not check_start(device):
-        sys.exit(1)
-    if not check_follow(device):
-        sys.exit(1)
+    if not mdadm_get_detail(device).is_resyncing():
+        if not check_start(device):
+            sys.exit(1)
+        if not check_follow(device):
+            sys.exit(1)
 
     ok, mismatch_count = check_mismatch(device)
     if not ok:

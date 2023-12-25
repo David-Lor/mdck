@@ -20,6 +20,7 @@ class MdadmOutput(BaseModel):
     device: str
     state_list: list[str] = []
     check_status: str | None = None
+    resync_status: str | None = None
 
     def is_active(self):
         return MdadmStates.Active in self.state_list
@@ -33,6 +34,10 @@ class MdadmOutput(BaseModel):
     @property
     def check_status_percentage(self) -> int | None:
         return parse_percentage(self.check_status)
+
+    @property
+    def resync_status_percentage(self) -> int | None:
+        return parse_percentage(self.resync_status)
 
 
 def parse_percentage(s: str) -> int | None:
