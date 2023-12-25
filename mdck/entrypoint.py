@@ -21,3 +21,6 @@ def main():
             sys.exit(1)
         if not repair_follow(settings.device):
             sys.exit(1)
+
+    if settings.check_after_repair:
+        main()
