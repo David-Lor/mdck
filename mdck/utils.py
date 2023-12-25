@@ -26,6 +26,18 @@ def mdadm_set_sync_action(device: str, action: str) -> bool:
     return True
 
 
+def mdadm_get_mismatch_count(device: str) -> tuple[bool, int]:
+    ok, value = read(f"/sys/block/{device}/md/mismatch_cnt")
+    if not ok:
+        print("KO read mismatch_cnt")
+        return False, 0
+    if not value.isnumeric():
+        print("KO read mismatch_cnt (value not numeric)")
+        return False, 0
+
+    return True, int(value)
+
+
 def mdadm_follow_percentage(device: str, state: str) -> bool:
     last_percentage = -1
     while True:
@@ -40,7 +52,7 @@ def mdadm_follow_percentage(device: str, state: str) -> bool:
 
         if current_percentage != last_percentage:
             last_percentage = current_percentage
-            print(state, current_percentage, "%")
+            print(state.capitalize(), current_percentage, "%")
 
         time.sleep(1)
 
@@ -56,7 +68,7 @@ def write(path: str, content: str):
         return False
 
 
-def read(path: str) -> [bool, str]:
+def read(path: str) -> tuple[bool, str]:
     try:
         with open(path, "r") as f:
             return True, f.read().strip()
