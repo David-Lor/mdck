@@ -8,6 +8,7 @@ class BaseModel(pydantic.BaseModel):
 class MdadmStates:
     Active = "active"
     Checking = "checking"
+    Resyncing = "resyncing"
 
 
 class MdadmActions:
@@ -25,6 +26,9 @@ class MdadmOutput(BaseModel):
 
     def is_checking(self):
         return MdadmStates.Checking in self.state_list
+
+    def is_resyncing(self):
+        return MdadmStates.Resyncing in self.state_list
 
     @property
     def check_status_percentage(self) -> int | None:

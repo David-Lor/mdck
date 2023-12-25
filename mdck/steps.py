@@ -4,17 +4,14 @@ from .utils import mdadm_get_detail, mdadm_set_sync_action, mdadm_get_mismatch_c
 
 def check_start(device: str) -> bool:
     status = mdadm_get_detail(device)
-    if not status.is_active():
-        print("Not active!")
-        return False
     if status.is_checking():
         print("Already checking!")
         return True
+    if status.is_resyncing():
+        print("Currently resyncing")
+        return True
 
-    if not mdadm_set_sync_action(device, MdadmActions.Check):
-        return False
-
-    return True
+    return mdadm_set_sync_action(device, MdadmActions.Check)
 
 
 def check_follow(device: str) -> bool:
@@ -31,8 +28,13 @@ def check_mismatch(device: str) -> tuple[bool, int]:
 
 
 def repair_start(device: str) -> bool:
-    pass
+    status = mdadm_get_detail(device)
+    if status.is_resyncing():
+        print("Already resyncing!")
+        return True
+
+    return mdadm_set_sync_action(device, MdadmActions.Repair)
 
 
 def repair_follow(device: str) -> bool:
-    pass
+    return mdadm_follow_percentage(device, MdadmStates.Resyncing)
