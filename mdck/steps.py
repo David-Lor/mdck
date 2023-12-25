@@ -18,7 +18,7 @@ def check_follow(device: str) -> bool:
     return mdadm_follow_percentage(device, MdadmStates.Checking)
 
 
-def check_mismatch(device: str) -> tuple[bool, int]:
+def get_mismatch(device: str) -> tuple[bool, int]:
     ok, mismatch_count = mdadm_get_mismatch_count(device)
     if not ok:
         return False, -1

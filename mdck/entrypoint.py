@@ -1,24 +1,23 @@
 import sys
 
-from .steps import check_start, check_follow, check_mismatch, repair_start, repair_follow
+from .steps import check_start, check_follow, get_mismatch, repair_start, repair_follow
 from .utils import mdadm_get_detail
+from .settings import settings
 
 
 def main():
-    device = sys.argv[-1]
-
-    if not mdadm_get_detail(device).is_resyncing():
-        if not check_start(device):
+    if settings.check and not mdadm_get_detail(settings.device).is_resyncing():
+        if not check_start(settings.device):
             sys.exit(1)
-        if not check_follow(device):
+        if not check_follow(settings.device):
             sys.exit(1)
 
-    ok, mismatch_count = check_mismatch(device)
+    ok, mismatch_count = get_mismatch(settings.device)
     if not ok:
         sys.exit(1)
 
-    if mismatch_count > 0 or mdadm_get_detail(device).is_resyncing():
-        if not repair_start(device):
+    if settings.repair and (mismatch_count > settings.repair_mismatch_threshold or mdadm_get_detail(settings.device).is_resyncing()):
+        if not repair_start(settings.device):
             sys.exit(1)
-        if not repair_follow(device):
+        if not repair_follow(settings.device):
             sys.exit(1)

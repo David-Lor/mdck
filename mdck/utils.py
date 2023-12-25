@@ -4,6 +4,7 @@ import subprocess
 import jc
 
 from .models import MdadmOutput, MdadmStates
+from .settings import settings
 
 
 def mdadm_exec(device: str, *args) -> MdadmOutput:
@@ -57,7 +58,7 @@ def mdadm_follow_percentage(device: str, state: str) -> bool:
             last_percentage = current_percentage
             print(state.capitalize(), current_percentage, "%")
 
-        time.sleep(1)
+        time.sleep(settings.watch_sleep)
 
 
 def write(path: str, content: str):
