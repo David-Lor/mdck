@@ -5,7 +5,7 @@ from .utils import mdadm_get_detail, mdadm_set_sync_action, mdadm_get_mismatch_c
 def check_start(device: str) -> bool:
     status = mdadm_get_detail(device)
     if status.is_checking():
-        print("Already checking!")
+        print("Currently checking")
         return True
     if status.is_resyncing():
         print("Currently resyncing")
@@ -30,7 +30,7 @@ def get_mismatch(device: str) -> tuple[bool, int]:
 def repair_start(device: str) -> bool:
     status = mdadm_get_detail(device)
     if status.is_resyncing():
-        print("Already resyncing!")
+        print("Currently resyncing!")
         return True
 
     return mdadm_set_sync_action(device, MdadmActions.Repair)
