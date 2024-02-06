@@ -15,11 +15,14 @@ def main():
     if not ok:
         sys.exit(1)
 
-    if settings.repair and mismatch_count > settings.repair_mismatch_threshold:
+    if mismatch_count <= settings.repair_mismatch_threshold:
+        sys.exit(0)
+
+    if settings.repair:
         if not repair_start(settings.device):
             sys.exit(1)
         if not repair_follow(settings.device):
             sys.exit(1)
 
-    if settings.check_after_repair:
-        main()
+        if settings.check_after_repair:
+            main()
