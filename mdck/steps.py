@@ -1,4 +1,5 @@
 from .models import MdadmStates, MdadmActions
+from .callback import Update, State, trigger_callback
 from .utils import mdadm_get_detail, mdadm_set_sync_action, mdadm_get_mismatch_count, mdadm_follow_percentage
 
 
@@ -15,7 +16,15 @@ def check_start(device: str) -> bool:
 
 
 def check_follow(device: str) -> bool:
-    return mdadm_follow_percentage(device, MdadmStates.Checking)
+    ok = mdadm_follow_percentage(device, MdadmStates.Checking)
+    if not ok:
+        trigger_callback(Update(
+            state=State.Checking,
+            device=device,
+            error=True,
+        ))
+
+    return ok
 
 
 def get_mismatch(device: str) -> tuple[bool, int]:
@@ -33,8 +42,22 @@ def repair_start(device: str) -> bool:
         print("Currently resyncing!")
         return True
 
-    return mdadm_set_sync_action(device, MdadmActions.Repair)
+    ok = mdadm_set_sync_action(device, MdadmActions.Repair)
+    trigger_callback(Update(
+        state=State.Resyncing,
+        device=device,
+        error=not ok,
+    ))
+    return ok
 
 
 def repair_follow(device: str) -> bool:
-    return mdadm_follow_percentage(device, MdadmStates.Resyncing)
+    ok = mdadm_follow_percentage(device, MdadmStates.Resyncing)
+    if not ok:
+        trigger_callback(Update(
+            state=State.Resyncing,
+            device=device,
+            error=True,
+        ))
+
+    return ok

@@ -4,6 +4,7 @@ import subprocess
 import jc
 
 from .models import MdadmOutput, MdadmStates
+from .callback import Update, State, trigger_callback
 from .settings import settings
 
 
@@ -57,6 +58,11 @@ def mdadm_follow_percentage(device: str, state: str) -> bool:
         if current_percentage != last_percentage:
             last_percentage = current_percentage
             print(state.capitalize(), current_percentage, "%")
+            trigger_callback(Update(
+                state=State.Checking if state == MdadmStates.Checking else State.Resyncing,
+                device=device,
+                percentage=last_percentage,
+            ))
 
         time.sleep(settings.watch_sleep)
 
