@@ -16,16 +16,15 @@ class State(str, enum.Enum):
 
 
 class Update(pydantic.BaseModel):
-    state: State
     device: str
+    state: State
     error: bool = False
     mismatch_count: Optional[int] = None
     percentage: Optional[int] = None
 
 
 def trigger_callback(update: Update):
-    update_data = update.model_dump_json()
-    print("Callback:", update_data)
+    update_data = update.model_dump_json(exclude_none=True, exclude_unset=True)
     if settings.updates_callback_path:
         # noinspection PyBroadException
         try:
