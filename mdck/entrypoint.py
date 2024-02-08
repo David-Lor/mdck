@@ -1,6 +1,7 @@
 import sys
 
 from .steps import check_start, check_follow, get_mismatch, repair_start, repair_follow
+from .callback import Update, State, trigger_callback
 from .settings import settings
 
 
@@ -13,7 +14,18 @@ def main():
 
     ok, mismatch_count = get_mismatch(settings.device)
     if not ok:
+        trigger_callback(Update(
+            device=settings.device,
+            state=State.CheckEnd,
+            error=True,
+        ))
         sys.exit(1)
+
+    trigger_callback(Update(
+        device=settings.device,
+        state=State.CheckEnd,
+        mismatch_count=mismatch_count,
+    ))
 
     if mismatch_count <= settings.repair_mismatch_threshold:
         sys.exit(0)
